@@ -54,11 +54,13 @@
 
 (setq org-cycle-include-plain-lists nil)
 
-;(require 'color-theme)
-;(eval-after-load "color-theme"
-;  '(progn
-;     (color-theme-initialize)
-;     (color-theme-hober)))
+(defun clear-shell ()
+	(interactive)
+	(let ((comint-buffer-maximum-size 0))
+		(comint-truncate-buffer)))
+
+(autoload 'js2-mode "js2-mode" nil t)
+(add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
 
 ; (transient-mark-mode 1)  ; Now on by default: makes the region act quite like the text "highlight" in many apps.
    ; (setq shift-select-mode t) ; Now on by default: allows shifted cursor-keys to control the region.
