@@ -59,8 +59,56 @@
 	(let ((comint-buffer-maximum-size 0))
 		(comint-truncate-buffer)))
 
+(defun sprite-top (start end)
+	(interactive "r")
+	(setq current_num (format "%s" (buffer-substring-no-properties start (line-end-position))))
+	(setq current_num (string-to-number current_num))
+	(setq new_num (- 2352 current_num))
+	(delete-region start (line-end-position))
+	(insert (format "-%spx" new_num)))
+
+(global-set-key (kbd "<f6>") 'sprite-top)
+
 (autoload 'js2-mode "js2-mode" nil t)
 (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
+(setq js2-pretty-multiline-decl-indentation-p t)
+(setq js2-bounce-indent-p nil)
+
+(setq cua-auto-tabify-rectangles nil)
+(defadvice align (around smart-tabs activate)
+	(let ((indent-tabs-mode nil)) ad-do-it))
+(defadvice align-regexp (around smart-tabs activate)
+	(let ((indent-tabs-mode nil)) ad-do-it))
+(defadvice indent-relative (around smart-tabs activate)
+	(let ((indent-tabs-mode nil)) ad-do-it))
+(defadvice indent-according-to-mode (around smart-tabs activate)
+	(let ((indent-tabs-mode indent-tabs-mode))
+		(if (memq indent-line-function
+							'(indent-relative
+								indent-relative-maybe))
+				(setq indent-tabs-mode nil))
+		ad-do-it))
+(defmacro smart-tabs-advice (function offset)
+	`(progn
+		 (defvaralias ',offset 'tab-width)
+		 (defadvice ,function (around smart-tabs activate)
+			 (cond
+				(indent-tabs-mode
+				 (save-excursion
+					 (beginning-of-line)
+					 (while (looking-at "\t*\\( +\\)\t+")
+						 (replace-match "" nil nil nil 1)))
+				 (setq tab-width tab-width)
+				 (let ((tab-width fill-column)
+							 (,offset fill-column)
+							 (wstart (window-start)))
+					 (unwind-protect
+							 (progn ad-do-it)
+						 (set-window-start (selected-window) wstart))))
+				(t
+				 ad-do-it)))))
+
+(smart-tabs-advice js2-indent-line js2-basic-offset)
 
 ; (transient-mark-mode 1)  ; Now on by default: makes the region act quite like the text "highlight" in many apps.
    ; (setq shift-select-mode t) ; Now on by default: allows shifted cursor-keys to control the region.
