@@ -67,6 +67,20 @@
 	(delete-region start (line-end-position))
 	(insert (format "-%spx" new_num)))
 
+(defun outdent (limit)
+  (while (search-forward "\n\t" limit t)
+    (replace-match "\n" nil t)))
+
+(defun unindent ()
+  (interactive)
+  (save-excursion (outdent nil)))
+
+(defun unindent-region ()
+  (interactive)
+  (save-excursion
+    (and (> (point) (mark)) (exchange-point-and-mark))
+    (outdent (mark))))
+
 (global-set-key (kbd "<f6>") 'sprite-top)
 
 (autoload 'js2-mode "js2-mode" nil t)
@@ -109,6 +123,8 @@
 				 ad-do-it)))))
 
 (smart-tabs-advice js2-indent-line js2-basic-offset)
+(smart-tabs-advice ruby-indent-line ruby-indent-level)
+(setq ruby-indent-tabs-mode t)
 
 ; (transient-mark-mode 1)  ; Now on by default: makes the region act quite like the text "highlight" in many apps.
    ; (setq shift-select-mode t) ; Now on by default: allows shifted cursor-keys to control the region.
