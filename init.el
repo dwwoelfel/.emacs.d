@@ -3,12 +3,15 @@
   ;; If you edit it by hand, you could mess it up, so be careful.
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
+ '(column-number-mode t)
  '(cua-mode t nil (cua-base))
+ '(ido-enable-flex-matching t)
  '(inhibit-startup-screen t)
  '(js-indent-level 2)
  '(menu-bar-mode t)
  '(scroll-bar-mode (quote right))
- '(show-paren-mode t))
+ '(show-paren-mode t)
+ '(size-indication-mode t))
 (custom-set-faces
   ;; custom-set-faces was added by Custom.
   ;; If you edit it by hand, you could mess it up, so be careful.
@@ -25,6 +28,10 @@
 	    (normal-top-level-add-subdirs-to-load-path)))
 	 load-path)))
 
+(autoload 'linum-mode "linum" "toggle line numbers on/off" t) 
+(global-set-key (kbd "C-<right>") 'linum-mode)    
+(global-set-key (kbd "C-<left>") 'linum-mode)    
+
 (require 'smooth-scrolling)
 
 (setq mouse-wheel-scroll-amount '(5 ((shift) . 5))) ;; five lines at a time
@@ -35,6 +42,11 @@
     
 (setq scroll-step 1) ;; keyboard scroll one line at a time
 
+;; Rails stuff
+
+(require 'ido)
+(ido-mode t)
+
 (require 'haml-mode)
 (add-hook 'haml-mode-hook
 	  '(lambda ()
@@ -43,8 +55,25 @@
 
 (require 'sass-mode)
 
+(require 'yaml-mode)
+(add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
+
+(add-hook 'yaml-mode-hook
+					'(lambda ()
+						 (define-key yaml-mode-map "\C-m" 'newline-and-indent)))
+
+;; Lisp stuff
+
+(setq inferior-lisp-program "/usr/local/bin/sbcl") ; your Lisp system
+(add-to-list 'load-path "~/.emacs.d/site-lisp/slime/")  ; your SLIME directory
+(require 'slime)
+(slime-setup)
+
+;; Latex Stuff
+
 (load "auctex.el" nil t t)
 (load "preview-latex.el" nil t t)
+
 
 (show-paren-mode 1)
 (tool-bar-mode -1)
@@ -53,6 +82,7 @@
 ;;(setq tab-stop-list '(2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30))
 
 ;; better backup handling
+
 (setq
    backup-by-copying t      ; don't clobber symlinks
    backup-directory-alist
@@ -64,10 +94,40 @@
 
 (setq org-cycle-include-plain-lists nil)
 
+;; Shell stuff
+
 (defun clear-shell ()
 	(interactive)
 	(let ((comint-buffer-maximum-size 0))
 		(comint-truncate-buffer)))
+
+;; viewing logs
+
+(defun colorize-ansi ()
+	(interactive)
+	(ansi-color-apply-on-region (point-min) (point-max))
+)
+
+;; this would be better if I could get the point whenever the buffer
+;; reverted. Then I could pass that point into colorize-ansi for an automatic
+;; colorizer. Would also save cpu cycles.
+(global-set-key (kbd "C-c C-a") 'colorize-ansi)
+
+(setq auto-mode-alist (cons '("\\.log" . auto-revert-tail-mode) auto-mode-alist))
+
+(add-hook 'auto-revert-tail-mode-hook 'ansi-color-for-comint-mode-on)
+
+(defun fc-eval-and-replace ()
+  "Replace the preceding sexp with its value."
+  (interactive)
+  (backward-kill-sexp)
+  (condition-case nil
+      (prin1 (eval (read (current-kill 0)))
+             (current-buffer))
+    (error (message "Invalid expression")
+           (insert (current-kill 0)))))
+
+(global-set-key (kbd "C-c C-e") 'fc-eval-and-replace)
 
 (defun sprite-top (start end)
 	(interactive "r")
@@ -90,8 +150,6 @@
   (save-excursion
     (and (> (point) (mark)) (exchange-point-and-mark))
     (outdent (mark))))
-
-(global-set-key (kbd "<f6>") 'sprite-top)
 
 (autoload 'js2-mode "js2-mode" nil t)
 (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
@@ -133,8 +191,8 @@
 				 ad-do-it)))))
 
 (smart-tabs-advice js2-indent-line js2-basic-offset)
-(smart-tabs-advice ruby-indent-line ruby-indent-level)
-(setq ruby-indent-tabs-mode t)
+(setq ruby-indent-tabs-mode nil)
+(setq ruby-indent-level 2)
 
 ; (transient-mark-mode 1)  ; Now on by default: makes the region act quite like the text "highlight" in many apps.
    ; (setq shift-select-mode t) ; Now on by default: allows shifted cursor-keys to control the region.
@@ -154,3 +212,14 @@
    ;; with this, doing an M-y will also affect the X11 clipboard, making emacs act as a sort of clipboard history, at
    ;; least of text you've pasted into it in the first place.
    ; (setq yank-pop-change-selection t)  ; makes rotating the kill ring change the X11 clipboard.
+
+
+;;; This was installed by package-install.el.
+;;; This provides support for the package system and
+;;; interfacing with ELPA, the package archive.
+;;; Move this code earlier if you want to reference
+;;; packages in your .emacs.
+(when
+		(load
+		 (expand-file-name "~/.emacs.d/elpa/package.el"))
+	(package-initialize))
