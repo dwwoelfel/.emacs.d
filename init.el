@@ -11,6 +11,7 @@
  '(scroll-bar-mode (quote right))
  '(show-paren-mode t)
  '(size-indication-mode t)
+ '(temporary-file-directory "~/.saves")
  '(tool-bar-mode nil))
 (custom-set-faces
   ;; custom-set-faces was added by Custom.
@@ -88,18 +89,28 @@
 (setq default-tab-width 2)
 ;;(setq tab-stop-list '(2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30))
 
-;; better backup handling
+;; better backup and autosave handling
 
 (setq
    backup-by-copying t      ; don't clobber symlinks
-   backup-directory-alist
-    '(("." . "~/.saves"))    ; don't litter my fs tree
    delete-old-versions t
    kept-new-versions 6
    kept-old-versions 2
    version-control t)       ; use versioned backups
 
+
+(setq backup-directory-alist
+			`((".*" . ,temporary-file-directory)))
+;;(setq auto-save-file-name-transforms
+;;			`((".*" ,temporary-file-directory t)))
+
+(setq auto-save-file-name-transforms
+			'(("\\`/[^/]*:\\([^/]*/\\)*\\([^/]*\\)\\'" "/tmp/\\2" t)
+				("\\`/?\\([^/]*/\\)*\\([^/]*\\)\\'" "~/.saves/\\2" t)))
+
 (setq org-cycle-include-plain-lists nil)
+
+
 
 ;; Shell stuff
 
@@ -115,9 +126,26 @@
 	(ansi-color-apply-on-region (point-min) (point-max))
 )
 
+;; tramp
+(setq tramp-default-method "ssh")
+;;; don't save local copies of backup files from remote server
+;;(add-to-list 'backup-directory-alist
+;;                  (cons tramp-file-name-regexp nil)) 
+;;; multi-hop for cakehealth
+;(add-to-list 'tramp-default-proxies-alist
+;						 '("\\10\\.0\\.0\\.50" nil "/ssh:daniel@50.18.196.122:"))
+;; TODO: previous lines throw an error "tramp-default-proxies-alist .... defn void
+;; try getting the version from cvs
+  
+
+
 ;; some keyboard shortcuts
 (global-set-key (kbd "C-<f10>") 'revert-buffer)
 (global-set-key (kbd "C-<f9>") 'magit-status)
+(global-set-key "\M- " 'hippie-expand)
+(global-set-key (kbd "C-|") 'align)
+(global-set-key (kbd "C-M-|") 'align-regexp)
+(global-set-key (kbd "C-c C-k") 'camelscore-word-at-point)
 
 ;; this would be better if I could get the point whenever the buffer
 ;; reverted. Then I could pass that point into colorize-ansi for an automatic
@@ -205,7 +233,37 @@
 (setq ruby-indent-tabs-mode nil)
 (setq ruby-indent-level 2)
 
-; (transient-mark-mode 1)  ; Now on by default: makes the region act quite like the text "highlight" in many apps.
+;; converting between variable types
+
+(defun split-name (s)
+	(split-string
+	 (let ((case-fold-search nil))
+		 (downcase
+			(replace-regexp-in-string "\\([a-z]\\)\\([A-Z]\\)" "\\1 \\2" s)))
+	 "[^A-Za-z0-9]+"))
+(defun camelcase  (s) (mapconcat 'capitalize (split-name s) ""))
+(defun underscore (s) (mapconcat 'downcase   (split-name s) "_"))
+(defun colonize   (s) (mapconcat 'capitalize (split-name s) "::"))
+(defun dasherize  (s) (mapconcat 'downcase   (split-name s) "-"))
+
+(defun camelscore (s)
+	(cond ((string-match-p "\:"  s)	(camelcase s))
+				((string-match-p "-" s) (colonize s))
+				((string-match-p "_" s)	(dasherize s))
+				(t (underscore s)) ))
+
+(defun camelscore-word-at-point ()
+	(interactive)
+	(let* ((case-fold-search nil)
+				 (beg (and (skip-chars-backward "[:alnum:]:_-") (point)))
+				 (end (and (skip-chars-forward  "[:alnum:]:_-") (point)))
+				 (txt (buffer-substring beg end))
+				 (cml (camelscore txt)) )
+		(if cml (progn (delete-region beg end) (insert cml))) ))
+
+
+
+; (Transient-mark-mode 1)  ; Now on by default: makes the region act quite like the text "highlight" in many apps.
    ; (setq shift-select-mode t) ; Now on by default: allows shifted cursor-keys to control the region.
    (setq mouse-drag-copy-region nil)  ; stops selection with a mouse being immediately injected to the kill ring
    (setq x-select-enable-primary nil)  ; stops killing/yanking interacting with primary X11 selection
