@@ -5,6 +5,7 @@
   ;; If there is more than one, they won't work right.
  '(column-number-mode t)
  '(cua-mode t nil (cua-base))
+ '(icicle-download-dir "~/.emacs.d/site-lisp/icicles")
  '(ido-enable-flex-matching t)
  '(inhibit-startup-screen t)
  '(js-indent-level 2)
@@ -25,35 +26,119 @@
   (setq load-path
 	(append
 	 (let ((load-path (copy-sequence load-path))) ;; Shadow
-	   (append 
+	   (append
 	    (copy-sequence (normal-top-level-add-to-load-path '(".")))
 	    (normal-top-level-add-subdirs-to-load-path)))
 	 load-path)))
 
-(autoload 'linum-mode "linum" "toggle line numbers on/off" t) 
-(global-set-key (kbd "C-<right>") 'linum-mode)    
-(global-set-key (kbd "C-<left>") 'linum-mode)    
+;; clojure
+(require 'package)
+(add-to-list 'package-archives
+             '("marmalade" . "http://marmalade-repo.org/packages/") t)
+(package-initialize)
+
+
+;; no more yes/no
+(defalias 'yes-or-no-p 'y-or-n-p)
+
+;; fontification for code blocks in org-mode
+(setq org-src-fontify-natively t)
+
+(autoload 'linum-mode "linum" "toggle line numbers on/off" t)
+(global-set-key (kbd "C-<right>") 'linum-mode)
+(global-set-key (kbd "C-<left>") 'linum-mode)
 
 (require 'smooth-scrolling)
 
 (setq mouse-wheel-scroll-amount '(5 ((shift) . 5))) ;; five lines at a time
 
 (setq mouse-wheel-progressive-speed nil) ;; don't accelerate scrolling
-    
+
 (setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
-    
+
 (setq scroll-step 1) ;; keyboard scroll one line at a time
 
 ;; open links in google chrome
 (setq browse-url-browser-function 'browse-url-generic
       browse-url-generic-program "google-chrome")
 
+;; flyspell
+
+(dolist (hook '(text-mode-hook))
+	(add-hook hook (lambda () (flyspell-mode 1))))
+(dolist (hook '(change-log-mode-hook log-edit-mode-hook))
+	(add-hook hook (lambda () (flyspell-mode -1))))
+
+
+;; ibuffer
+(global-set-key (kbd "C-x C-b") 'ibuffer)
+(autoload 'ibuffer "ibuffer" "List buffers." t)
+
+(require 'icicles)
+
+
+(require 'expand-region)
+(global-set-key (kbd "C-@") 'er/expand-region)
+
 (require 'magit)
 
+;; tradeoff isn't worth it behavior is unexpected
+;; it could work if there was a preceeding command key
+;; required, ie hold down M
+;; so, I just tried that and it turns out that holding
+;; down M actually works. Emacs is truly incredible. 
+;;(require 'wrap-region)
+;;(wrap-region-global-mode t)
+
+(load "~/.emacs.d/site-lisp/haskell/haskell-site-file")
+(add-hook 'haskell-mode-hook 'turn-on-haskell-doc-mode)
+(add-hook 'haskell-mode-hook 'turn-on-haskell-indentation)
+
+;;(add-to-list 'minor-mode-alist '("\\.org" . visual-line-mode))
+
 ;; Rails stuff
+;;(add-to-list 'grep-files-aliases (cons "rails" "*.rb *.haml *.erb *.sass *.js *.coffee")) ;; get symbol definition void on grep-files-aliases
+
+(require 'yari)
+(setq rinari-tags-file-name "TAGS")
 
 (require 'ido)
 (ido-mode t)
+
+(require 'flymake)
+
+;; I don't like the default colors :)
+(custom-set-faces
+ '(flymake-errline ((((class color)) (:underline "red"))))
+ '(flymake-warnline ((((class color)) (:underline "yellow")))))
+
+;; Invoke ruby with '-c' to get syntax checking
+(defun flymake-ruby-init ()
+  (let* ((temp-file   (flymake-init-create-temp-buffer-copy
+                       'flymake-create-temp-inplace))
+	 (local-file  (file-relative-name
+                       temp-file
+                       (file-name-directory buffer-file-name))))
+    (list "ruby" (list "-cw" local-file))))
+
+(push '(".+\\.rb$" flymake-ruby-init) flymake-allowed-file-name-masks)
+(push '("Rakefile$" flymake-ruby-init) flymake-allowed-file-name-masks)
+
+(push '("^\\(.*\\):\\([0-9]+\\): \\(.*\\)$" 1 2 nil 3) flymake-err-line-patterns)
+
+(add-hook 'ruby-mode-hook
+          '(lambda ()
+
+	     ;; Don't want flymake mode for ruby regions in rhtml files and also on read only files
+	     (if (and (not (null buffer-file-name)) (file-writable-p buffer-file-name))
+		 (flymake-mode))
+	     ))
+
+(defun my-flymake-show-help ()
+	(interactive)
+	(when (get-char-property (point) 'flymake-overlay)
+		(let ((help (get-char-property (point) 'help-echo)))
+			(if help (message "%s" help)))))
 
 (require 'haml-mode)
 (add-hook 'haml-mode-hook
@@ -130,18 +215,17 @@
 (setq tramp-default-method "ssh")
 ;;; don't save local copies of backup files from remote server
 ;;(add-to-list 'backup-directory-alist
-;;                  (cons tramp-file-name-regexp nil)) 
+;;                  (cons tramp-file-name-regexp nil))
 ;;; multi-hop for cakehealth
 ;(add-to-list 'tramp-default-proxies-alist
 ;						 '("\\10\\.0\\.0\\.50" nil "/ssh:daniel@50.18.196.122:"))
 ;; TODO: previous lines throw an error "tramp-default-proxies-alist .... defn void
 ;; try getting the version from cvs
-  
-
 
 ;; some keyboard shortcuts
 (global-set-key (kbd "C-<f10>") 'revert-buffer)
 (global-set-key (kbd "C-<f9>") 'magit-status)
+(global-set-key (kbd "<f8>") 'delete-trailing-whitespace)
 (global-set-key "\M- " 'hippie-expand)
 (global-set-key (kbd "C-|") 'align)
 (global-set-key (kbd "C-M-|") 'align-regexp)
@@ -166,7 +250,7 @@
     (error (message "Invalid expression")
            (insert (current-kill 0)))))
 
-(global-set-key (kbd "C-c C-e") 'fc-eval-and-replace)
+(global-set-key (kbd "C-c C-c C-e") 'fc-eval-and-replace)
 
 (defun sprite-top (start end)
 	(interactive "r")
@@ -292,3 +376,11 @@
 		(load
 		 (expand-file-name "~/.emacs.d/elpa/package.el"))
 	(package-initialize))
+
+;; wrapping
+
+(defun insert-quotes (&optional arg)
+  (interactive "P")
+  (insert-pair arg ?\" ?\"))
+
+(global-set-key (kbd "M-\"") 'insert-quotes)
