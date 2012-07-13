@@ -1,1 +1,5 @@
 session.*
+auto-save-list/
+swank/
+tramp
+url/

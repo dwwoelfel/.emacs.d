@@ -4,7 +4,7 @@
 
 
 ;;;### (autoloads (slime-hyperspec-lookup slime-connect slime slime-mode
-;;;;;;  slime-lisp-mode-hook) "slime" "slime.el" (20226 8180))
+;;;;;;  slime-lisp-mode-hook) "slime" "slime.el" (20341 58319))
 ;;; Generated autoloads from slime.el
 
 (defvar slime-lisp-modes '(lisp-mode))
@@ -16,7 +16,7 @@ Setup Emacs so that lisp-mode buffers always use SLIME.
 CONTRIBS is a list of contrib packages to load." (when (member (quote lisp-mode) slime-lisp-modes) (add-hook (quote lisp-mode-hook) (quote slime-lisp-mode-hook))) (setq slime-setup-contribs contribs) (slime-setup-contribs))
 
 (autoload 'slime-lisp-mode-hook "slime" "\
-Not documented
+
 
 \(fn)" nil nil)
 
@@ -70,7 +70,7 @@ A wrapper for `hyperspec-lookup'
 
 ;;;***
 
-;;;### (autoloads nil nil ("slime-pkg.el") (20226 8180 822236))
+;;;### (autoloads nil nil ("slime-pkg.el") (20341 58320 79198))
 
 ;;;***
 
