@@ -5,13 +5,17 @@
  ;; If there is more than one, they won't work right.
  '(coffee-tab-width 2)
  '(column-number-mode t)
+ '(css-indent-offset 2)
  '(cua-mode t nil (cua-base))
+ '(font-use-system-font t)
  '(icicle-download-dir "~/.emacs.d/site-lisp/icicles")
  '(ido-enable-flex-matching t)
  '(inhibit-startup-screen t)
  '(js-indent-level 2)
+ '(less-css-lessc-options (quote ("-x")))
  '(org-agenda-files (quote ("~/Dropbox/cakehealth/cake_health.org")))
  '(org-modules (quote (org-bbdb org-bibtex org-docview org-gnus org-info org-jsinfo org-irc org-mew org-mhe org-rmail org-vm org-wl org-w3m org-drill)))
+ '(safe-local-variable-values (quote ((less-css-output-directory . "../css") (less-css-compile-at-save . t) (ruby-compilation-executable . "ruby") (ruby-compilation-executable . "ruby1.8") (ruby-compilation-executable . "ruby1.9") (ruby-compilation-executable . "rbx") (ruby-compilation-executable . "jruby"))))
  '(scroll-bar-mode (quote right))
  '(show-paren-mode t)
  '(size-indication-mode t)
@@ -40,7 +44,7 @@
 (setq-default display-buffer-reuse-frames nil)
 ;;(require 'org-drill) wants org-learn
 
-
+(winner-mode 1)
 
 (require 'key-chord)
 (key-chord-mode 1)
@@ -96,7 +100,7 @@
     skips over to the next whitespace and then whacks it all to the next
     word."
 	(interactive "P")
-	(let ((regexp (if arg "[ \t\n]+" "[ \t]+")))
+	(let ((regexp (if arg "[ \t\n]+" "[ \t\n]+")))
 		(re-search-forward regexp nil t)
 		(replace-match "" nil nil)))
 
@@ -105,7 +109,7 @@
 (add-to-list 'completion-styles 'substring)
 
 (require 'package)
-(add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/")) 
+(add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
 ;; (add-to-list 'package-archives
 ;;              '("marmalade" . "http://marmalade-repo.org/packages/") t)
 ;; (package-initialize)
@@ -117,7 +121,11 @@
 ;; (add-hook 'sldb-mode-hook 'durendal-dim-sldb-font-lock)
 ;; (add-hook 'slime-compilation-finished-hook 'durendal-hide-successful-compile)
 
-(setq auto-mode-alist (cons '(".cljs" . clojure-mode) auto-mode-alist))
+(add-to-list 'auto-mode-alist '("\\.cljs" . clojure-mode))
+(add-to-list 'auto-mode-alist '("\\.cljx" . clojure-mode))
+(add-to-list 'auto-mode-alist '("\\.dieter" . clojure-mode))
+
+(setq nrepl-popup-stacktraces nil)
 
 ;; no more yes/no
 (defalias 'yes-or-no-p 'y-or-n-p)
@@ -181,6 +189,38 @@
 ;; Rails stuff
 ;;(add-to-list 'grep-files-aliases (cons "rails" "*.rb *.haml *.erb *.sass *.js *.coffee")) ;; get symbol definition void on grep-files-aliases
 
+
+;; Highlight colors
+
+(require 'cl)
+(defun hexcolour-luminance (color)
+	"Calculate the luminance of a color string (e.g. \"#ffaa00\", \"blue\").
+  This is 0.3 red + 0.59 green + 0.11 blue and always between 0 and 255."
+	(let* ((values (x-color-values color))
+				 (r (car values))
+				 (g (cadr values))
+				 (b (caddr values)))
+		(floor (+ (* .3 r) (* .59 g) (* .11 b)) 256)))
+
+(defun hexcolour-add-to-font-lock ()
+	(interactive)
+	(font-lock-add-keywords nil
+		 `((,(concat "#[0-9a-fA-F]\\{3\\}[0-9a-fA-F]\\{3\\}?\\|"
+								 (regexp-opt (x-defined-colors) 'words))
+				(0 (let ((colour (match-string-no-properties 0)))
+						 (put-text-property
+							(match-beginning 0) (match-end 0)
+							'face `((:foreground ,(if (> 128.0 
+																					 (hexcolour-luminance colour))
+																				"white" "black"))
+											(:background ,colour)))))))))
+
+(add-hook 'less-css-mode 'hexcoulour-add-to-font-lock)
+(add-hook 'css-mode 'hexcoulour-add-to-font-lock)
+(add-hook 'sass-mode 'hexcoulour-add-to-font-lock)
+
+(setq scss-compile-at-save nil)
+
 (require 'yari)
 (setq rinari-tags-file-name "TAGS")
 
@@ -201,7 +241,7 @@
 (defun trim-string (string)
   "Remove white spaces in beginning and ending of STRING.
    White space here is any of: space, tab, emacs newline (line feed, ASCII 10)."
-  (replace-regexp-in-string "\\`[ \t\n]*" "" 
+  (replace-regexp-in-string "\\`[ \t\n]*" ""
     (replace-regexp-in-string "[ \t\n]*\\'" "" string)))
 
 
@@ -210,8 +250,8 @@
   (let* ((return-code)
 	 (result (with-output-to-string
            (with-current-buffer standard-output
-              (setq return-code 
-               (call-process shell-file-name nil 
+              (setq return-code
+               (call-process shell-file-name nil
                  t nil shell-command-switch command))))))
     (list return-code result)))
 
@@ -281,10 +321,11 @@
 (setq org-src-fontify-natively t)
 
 ;;; custom keybindings and modes for org-mode
-(add-hook 'org-mode-hook 
+(add-hook 'org-mode-hook
           (lambda ()
             (local-set-key "\M-[" 'org-metaleft)
             (local-set-key "\M-]" 'org-metaright)
+						(local-set-key (kbd "C-S-<return>") 'org-insert-heading-after-current)
 						(org-indent-mode)
 						(visual-line-mode)))
 
@@ -301,6 +342,13 @@
 	(interactive)
 	(ansi-color-apply-on-region (point-min) (point-max))
 )
+
+(require 'ansi-color)
+(defun colorize-compilation-buffer ()
+  (toggle-read-only)
+  (ansi-color-apply-on-region (point-min) (point-max))
+  (toggle-read-only))
+(add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
 
 ;; tramp
 (setq tramp-default-method "ssh")
@@ -389,7 +437,6 @@
 								(require 'setup-slime-js))))
 
 (global-set-key [f5] 'slime-js-reload)
-(global-set-key [f6] 'slime-js-coffee-eval-buffer)
 (add-hook 'js2-mode-hook
           (lambda ()
             (slime-js-minor-mode 1)))
@@ -406,6 +453,29 @@
             (local-set-key (kbd "C-c C-b") 'slime-js-coffee-eval-buffer)
             (slime-js-minor-mode 1)))
 
+;; ;; Close the compilation window if there was no error at all.
+;; (setq compilation-exit-message-function
+;; 			(lambda (status code msg)
+;; 				;; If M-x compile exists with a 0
+;; 				(when (and (eq status 'exit) (zerop code))
+;; 					;; then bury the *compilation* buffer, so that C-x b doesn't go there
+;; 					(bury-buffer "*compilation*")
+;; 					;; and return to whatever were looking at before
+;; 					(replace-buffer-in-windows "*compilation*"))
+;; 				;; Always return the anticipated result of compilation-exit-message-function
+;; 				(cons msg code)))
+
+  ;; (setq compilation-finish-functions 'compile-autoclose)
+  ;; (defun compile-autoclose (buffer string)
+  ;;    (cond ((string-match "finished" string)
+	;;   (bury-buffer "*compilation*")
+  ;;         (winner-undo)
+  ;;         (message "Build successful."))
+  ;;        (t                                                                    
+  ;;         (message "Compilation exited abnormally: %s" string))))
+
+;; Need to find a better way to hide the compilation buffer, this
+;; hides buffers I want to see, like grep
 
 (setq cua-auto-tabify-rectangles nil)
 (defadvice align (around smart-tabs activate)
@@ -540,3 +610,93 @@
 (defun clojurescript-repl ()
  (interactive)
  (run-lisp "lein trampoline cljsbuild repl-listen"))
+
+(setq inferior-lisp-program "browser-repl")
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; Allow input to be sent to somewhere other than inferior-lisp
+;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; This is a total hack: we're hardcoding the name of the shell buffer
+(defun shell-send-input (input)
+  "Send INPUT into the *shell* buffer and leave it visible."
+  (save-selected-window
+    (switch-to-buffer-other-window "*shell*")
+    (goto-char (point-max))
+    (insert input)
+    (comint-send-input)))
+
+(defun defun-at-point ()
+  "Return the text of the defun at point."
+  (apply #'buffer-substring-no-properties
+         (region-for-defun-at-point)))
+
+(defun region-for-defun-at-point ()
+  "Return the start and end position of defun at point."
+  (save-excursion
+    (save-match-data
+      (end-of-defun)
+      (let ((end (point)))
+        (beginning-of-defun)
+        (list (point) end)))))
+
+(defun expression-preceding-point ()
+  "Return the expression preceding point as a string."
+  (buffer-substring-no-properties
+   (save-excursion (backward-sexp) (point))
+   (point)))
+
+(defun shell-eval-last-expression ()
+  "Send the expression preceding point to the *shell* buffer."
+  (interactive)
+  (shell-send-input (expression-preceding-point)))
+
+(defun shell-eval-defun ()
+  "Send the current toplevel expression to the *shell* buffer."
+  (interactive)
+  (shell-send-input (defun-at-point)))
+
+(add-hook 'clojure-mode-hook
+          '(lambda ()
+             (define-key clojure-mode-map (kbd "C-c e") 'shell-eval-last-expression)
+             (define-key clojure-mode-map (kbd "C-c x") 'shell-eval-defun)))
+
+
+(add-hook 'slime-event-hooks 
+					'(lambda (event)
+						 (let ((command (cadr event)))
+							 (if (stringp command) 
+									 (message command))
+							 (if (and (stringp command) (string-match "Remote attached*"
+																												command))
+									 (slime-js-eval "alert('swank-js is middleware!')")))))
+
+(require 'sudo)
+
+(defun sudo-before-save-hook ()
+  (set (make-local-variable 'sudo:file) (buffer-file-name))
+  (when sudo:file
+    (unless(file-writable-p sudo:file)
+      (set (make-local-variable 'sudo:old-owner-uid) (nth 2 (file-attributes sudo:file)))
+      (when (numberp sudo:old-owner-uid)
+	(unless (= (user-uid) sudo:old-owner-uid)
+	  (when (y-or-n-p
+		 (format "File %s is owned by %s, save it with sudo? "
+			 (file-name-nondirectory sudo:file)
+			 (user-login-name sudo:old-owner-uid)))
+	    (sudo-chown-file (int-to-string (user-uid)) (sudo-quoting sudo:file))
+	    (add-hook 'after-save-hook
+		      (lambda ()
+			(sudo-chown-file (int-to-string sudo:old-owner-uid)
+					 (sudo-quoting sudo:file))
+			(if sudo-clear-password-always
+			    (sudo-kill-password-timeout)))
+		      nil   ;; not append
+		      t	    ;; buffer local hook
+		      )))))))
+
+
+(add-hook 'before-save-hook 'sudo-before-save-hook)

@@ -31,7 +31,7 @@
 (require 'slime-js)
 (require 'coffee-mode)
 
-(setq slime-js-target-url "http://localhost:3000")
+(setq slime-js-target-url "http://localhost:8090")
 (setq slime-js-connect-url "http://localhost:8009")
 (setq slime-js-starting-url "/")
 (setq slime-js-swank-command "swank-js")
