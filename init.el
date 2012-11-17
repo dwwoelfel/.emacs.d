@@ -244,6 +244,7 @@
 ;(require 'flymake-ruby)
 ;(add-hook 'ruby-mode-hook 'flymake-ruby-load)
 (add-to-list 'auto-mode-alist '("\\.rabl$" . ruby-mode))
+(add-to-list 'auto-mode-alist '("\\.hamlc$" . haml-mode))
 
 (defun trim-string (string)
   "Remove white spaces in beginning and ending of STRING.
@@ -440,8 +441,12 @@
 
 (add-hook 'after-init-hook
 					#'(lambda ()
+
 							(when (locate-library "slime-js")
+								(require 'haml-coffee-mode)
 								(require 'setup-slime-js))))
+
+
 
 (global-set-key [f5] 'slime-js-reload)
 (add-hook 'js2-mode-hook
@@ -453,12 +458,25 @@
 (defun turn-on-tabs ()
 	(setq indent-tabs-mode t))
 
+(defun turn-off-tabs ()
+	(setq indent-tabs-mode nil))
+
+(add-hook 'haml-mode-hook
+					(lambda ()
+						(turn-off-tabs)))
+
 (add-hook 'coffee-mode-hook
           (lambda ()
-						(turn-on-tabs)
             (local-set-key (kbd "C-c C-d") 'slime-js-coffee-eval-current)
             (local-set-key (kbd "C-c C-b") 'slime-js-coffee-eval-buffer)
             (slime-js-minor-mode 1)))
+
+(add-hook 'haml-mode-hook
+          (lambda ()
+            (local-set-key (kbd "C-c C-d") 'slime-js-haml-coffee-eval-current)
+            (local-set-key (kbd "C-c C-b") 'slime-js-haml-coffee-eval-buffer)
+            (slime-js-minor-mode 1)))
+
 
 ;; ;; Close the compilation window if there was no error at all.
 ;; (setq compilation-exit-message-function
