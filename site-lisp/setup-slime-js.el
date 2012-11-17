@@ -30,13 +30,14 @@
 (require 'slime)
 (require 'slime-js)
 (require 'coffee-mode)
+(require 'haml-coffee-mode)
 
 (setq slime-js-target-url "http://localhost:8090")
 (setq slime-js-connect-url "http://localhost:8009")
 (setq slime-js-starting-url "/")
 (setq slime-js-swank-command "swank-js")
-(setq slime-js-swank-args '())
-(setq slime-js-browser-command "google-chrome")
+(setq slime-js-swank-args '("4008"))
+(setq slime-js-browser-command "chrome")
 (setq slime-js-browser-jacked-in-p nil)
 
 (add-hook 'js2-mode-hook (lambda () (slime-js-minor-mode 1)))
@@ -53,7 +54,7 @@
   (slime-js-run-swank)
   (sleep-for 1)
   (setq slime-protocol-version 'ignore)
-  (slime-connect "localhost" 4005))
+  (slime-connect "localhost" 4008))
 
 (defun slime-js-jack-in-browser ()
   "Start a swank-js server, connect to it, open a repl, open a browser, connect to that."
@@ -131,7 +132,18 @@
 	(coffee-compile-buffer)
 	(switch-to-buffer coffee-compiled-buffer-name) ;; defined in coffee-mode
 	(slime-js-eval-buffer)
-	(kill-buffer coffee-compiled-buffer-name))
+	(kill-buffer coffee-compiled-buffer-name)
+	(slime-js-eval "SammyApp.refresh()") ;; make this a hook?
+	)
+
+(defun slime-js-haml-coffee-eval-buffer ()
+	(interactive)
+	(haml-coffee-compile-buffer)
+	(switch-to-buffer haml-coffee-compiled-buffer-name) ;; defined in haml-coffee-mode
+	(slime-js-eval-buffer)
+	(kill-buffer haml-coffee-compiled-buffer-name)
+	(slime-js-eval "SammyApp.refresh()") ;; make this a hook?
+	(message "Sent buffer to remote"))
 
 ;; Remove slime-minor-mode from mode line if diminish.el is installed
 (when (boundp 'diminish)
