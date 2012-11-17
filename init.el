@@ -41,6 +41,13 @@
 	    (normal-top-level-add-subdirs-to-load-path)))
 	 load-path)))
 
+;disable backup
+(setq backup-inhibited t)
+;disable auto save
+(setq auto-save-default nil)
+
+(setq ispell-program-name "hunspell")
+
 (setq-default display-buffer-reuse-frames nil)
 ;;(require 'org-drill) wants org-learn
 
@@ -299,12 +306,12 @@
 
 ;; better backup and autosave handling
 
-(setq
-   backup-by-copying t      ; don't clobber symlinks
-   delete-old-versions t
-   kept-new-versions 6
-   kept-old-versions 2
-   version-control t)       ; use versioned backups
+;; (setq
+;;    backup-by-copying t      ; don't clobber symlinks
+;;    delete-old-versions t
+;;    kept-new-versions 6
+;;    kept-old-versions 2
+;;    version-control t)       ; use versioned backups
 
 
 (setq backup-directory-alist
