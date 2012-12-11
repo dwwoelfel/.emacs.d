@@ -71,7 +71,7 @@
          (remotes (slime-eval '(js:list-remotes)))
          (remote-names
           (loop for remote in remotes
-                collect (concat	(third remote)
+                collect (concat (third remote)
                                 "/"
                                 (replace-regexp-in-string
                                  "^:" ""(symbol-name (second remote))))))
@@ -221,17 +221,3 @@ Null prefix argument turns off the mode."
 (provide 'slime-js)
 
 ;;; slime-js.el ends here
-
-(defun my-hook (event)
-	(let ((command (cadr event)))
-		(if (and (stringp command) (string-match "Remote attached*"
-																						 command))
-				(let ((remotes (cdr (slime-eval '(js:list-remotes)))))
-					(message "hello")
-					(slime-eval '(js:select-remote ,(car (last newest-remote)) nil))
-					(slime-js-eval "alert('swank-js is middleware!')")))))
-
-
-(add-hook 'slime-event-hooks 'my-hook)
-
-
