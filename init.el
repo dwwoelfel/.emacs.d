@@ -27,9 +27,16 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :stipple nil :background "white" :foreground "black" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 90 :width normal :foundry "microsoft" :family "Consolas"))))
+;; '(default ((t (:inherit nil :stipple nil :background "white" :foreground "black" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 90 :width normal :family "Menlo" :size ))))
  '(flymake-errline ((((class color)) (:background "pink"))))
  '(flymake-warnline ((((class color)) (:background "#EEEE00")))))
+
+;; mac bs
+;; read in PATH from .bashrc
+(if (not (getenv "TERM_PROGRAM"))
+		(setenv "PATH"
+						(shell-command-to-string "source $HOME/.bashrc && printf $PATH")))
+
 
 ;; load path
 (let ((default-directory "/home/daniel/.emacs.d/site-lisp"))
@@ -189,7 +196,7 @@
      (when (not window-system)
        (set-face-background 'magit-item-highlight "black"))))
 
-(load "/usr/home/daniel/.emacs.d/site-lisp/haskell/haskell-site-file")
+(load "/home/daniel/.emacs.d/site-lisp/haskell/haskell-site-file")
 (add-hook 'haskell-mode-hook 'turn-on-haskell-doc-mode)
 (add-hook 'haskell-mode-hook 'turn-on-haskell-indentation)
 
