@@ -453,6 +453,9 @@
           (lambda ()
             (slime-js-minor-mode 1)))
 
+;; One day this will be smart enough to do a clojure-jack-in or slime-js-jack-in if the port isn't open yet
+(global-set-key [f4] 'slime-cycle-connections)
+
 (require 'coffee-mode)
 
 (defun turn-on-tabs ()
@@ -725,3 +728,10 @@
 
 
 (add-hook 'before-save-hook 'sudo-before-save-hook)
+
+(defun beautify-json ()
+  (interactive)
+  (let ((b (if mark-active (min (point) (mark)) (point-min)))
+        (e (if mark-active (max (point) (mark)) (point-max))))
+    (shell-command-on-region b e
+     "python -mjson.tool" (current-buffer) t)))
