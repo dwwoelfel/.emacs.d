@@ -43,6 +43,7 @@
 (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
 (setq frame-title-format "%b")
 (setq default-tab-width 2)
+(setq initial-major-mode 'fundamental-mode)
 
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file)
