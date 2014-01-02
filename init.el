@@ -1,5 +1,3 @@
-(setq debug-on-error t)
-
 (add-to-list 'load-path "~/.emacs.d/el-get/el-get")
 
 (unless (require 'el-get nil 'noerror)
