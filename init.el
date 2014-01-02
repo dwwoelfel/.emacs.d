@@ -24,7 +24,7 @@
          :features ',name))
 
 (defmacro rename-modeline (package-name mode new-name)
-  `(eval-after-load ,package-name
+  `(eval-after-load ',package-name
      '(defadvice ,mode (after rename-modeline activate)
         (setq mode-name ,new-name))))
 
@@ -65,7 +65,7 @@
                                      (define-key cider-repl-mode-map (kbd "M-R") 'cider-repl-previous-matching-input))))
 
 (defun clojure-after ()
-  (rename-modeline "clojure-mode" clojure-mode "Clj")
+  (rename-modeline clojure-mode clojure-mode "Clj")
   (add-to-list 'auto-mode-alist '("\\.cljs" . clojure-mode))
   (add-to-list 'auto-mode-alist '("\\.cljx" . clojure-mode))
   (add-to-list 'auto-mode-alist '("\\.dieter" . clojure-mode))
