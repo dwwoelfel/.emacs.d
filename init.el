@@ -57,7 +57,8 @@
 
   (setq nrepl-buffer-name-separator "-")
   (setq nrepl-buffer-name-show-port t)
-  (setq cider-repl-print-length 1000)
+
+  (setq cider-repl-print-length 10000)
   (setq cider-repl-history-size 500000)
   (setq cider-repl-history-file "~/.nrepl-history.eld")
   (add-hook 'cider-repl-mode-hook 'subword-mode)
