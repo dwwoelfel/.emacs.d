@@ -60,13 +60,16 @@
   (setq cider-repl-print-length 1000)
   (setq cider-repl-history-size 500000)
   (setq cider-repl-history-file "~/.nrepl-history.eld")
+  ;; (eval-after-load 'cider
+  ;;   (define-key cider-repl-mode-map (kbd "M-R") 'cider-repl-previous-matching-input))
   (add-hook 'cider-repl-mode-hook 'subword-mode)
-  (eval-after-load 'cider-repl-mode
-    ;; '(progn
-    ;;   (defun fix-nrepl-indentation ()
-    ;;     (setq-local lisp-indent-function 'clojure-indent-function))
-    ;;   (add-hook 'nrepl-mode-hook 'fix-nrepl-indentation))
-    '(define-key cider-repl-mode-map (kbd "M-R") 'cider-repl-previous-matching-input)))
+  (add-hook 'cider-repl-mode-hook '(lambda ()
+                                     (define-key cider-repl-mode-map (kbd "M-R") 'cider-repl-previous-matching-input))))
+            ;; '(progn
+            ;;   (defun fix-nrepl-indentation ()
+            ;;     (setq-local lisp-indent-function 'clojure-indent-function))
+            ;;   (add-hook 'nrepl-mode-hook 'fix-nrepl-indentation))
+
 
 (defun clojure-after ()
   (rename-modeline "clojure-mode" clojure-mode "Clj")
