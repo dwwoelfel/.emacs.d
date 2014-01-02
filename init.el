@@ -53,10 +53,7 @@
 (defun cider-after ()
   (setq cider-popup-stacktraces t)
   (setq cider-repl-popup-stacktraces t)
-
-  ;; Do these both do the same thing?
   (setq cider-popup-on-error nil)
-  (setq cider-auto-select-error-buffer nil)
 
   (setq nrepl-buffer-name-separator "-")
   (setq nrepl-buffer-name-show-port t)
