@@ -1,6 +1,5 @@
 session.*
 auto-save-list/
-swank/
 tramp
-url/
-elnode/
+el-get/
+elpa/
