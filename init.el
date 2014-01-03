@@ -31,10 +31,14 @@
 (defun magit-after ()
   (add-hook 'magit-mode-hook
     '(lambda ()
-       (set-face-foreground 'magit-diff-add "green3")
-       (set-face-foreground 'magit-diff-del "red3")
-       (when (not window-system)
-         (set-face-background 'magit-item-highlight "black"))
+       ;; TODO: these shouldn't be in a hook 
+       (set-face-foreground 'magit-diff-add "black")
+       (set-face-background 'magit-diff-add "#ddffdd")
+       (set-face-foreground 'magit-diff-del "black")
+       (set-face-background 'magit-diff-del "#ffdddd")
+       (set-face-foreground 'magit-item-highlight "black")
+       (set-face-background 'magit-item-highlight "gray93")
+       (set-face-foreground 'diff-context "black")
 
        (defadvice magit-status (around magit-fullscreen activate)
          (window-configuration-to-register :magit-fullscreen)
