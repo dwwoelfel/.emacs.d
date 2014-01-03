@@ -18,6 +18,5 @@
 (setq interprogram-paste-function 'mac-copy)
 (set-language-environment "UTF-8")
 (set-path)
-(message "HIHIHHHIHIIHHIHIIHIH")
 
 (provide 'mac-bs)
