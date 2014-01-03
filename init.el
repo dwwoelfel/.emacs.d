@@ -57,7 +57,8 @@
             (kill-buffer "*magit-process*")))))
   (global-set-key (kbd "C-c C-m c") 'magit-checkout)
   (global-set-key (kbd "C-c C-m f") 'magit-fetch)
-  (global-set-key (kbd "C-c C-m u") 'magit-submodule-update))
+  (global-set-key (kbd "C-c C-m u") 'magit-submodule-update)
+  (global-set-key (kbd "C-c C-m m") 'magit-merge))
 
 (defun cider-after ()
   (setq cider-popup-stacktraces t)
