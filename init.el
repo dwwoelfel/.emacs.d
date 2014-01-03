@@ -55,7 +55,9 @@
          '(lambda ()
             (interactive)
             (kill-buffer "*magit-process*")))))
-  (global-set-key (kbd "C-c C-m c") 'magit-checkout))
+  (global-set-key (kbd "C-c C-m c") 'magit-checkout)
+  (global-set-key (kbd "C-c C-m f") 'magit-fetch)
+  (global-set-key (kbd "C-c C-m u") 'magit-submodule-update))
 
 (defun cider-after ()
   (setq cider-popup-stacktraces t)
