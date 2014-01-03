@@ -29,26 +29,29 @@
         (setq mode-name ,new-name))))
 
 (defun magit-after ()
-  (eval-after-load 'magit-mode
-    '(progn
+  (add-hook 'magit-mode-hook
+    '(lambda ()
        (set-face-foreground 'magit-diff-add "green3")
        (set-face-foreground 'magit-diff-del "red3")
        (when (not window-system)
          (set-face-background 'magit-item-highlight "black"))
 
-      (defadvice magit-status (around magit-fullscreen activate)
-        (window-configuration-to-register :magit-fullscreen)
-        ad-do-it
-        (delete-other-windows))
-      (defun exit-magit ()
-        (interactive)
-        (kill-buffer)
-        (jump-to-register :magit-fullscreen))
-      (defun kill-magit-git-process ()
-        (interactive)
-        (kill-buffer "*magit-process*"))
-      (define-key magit-status-mode-map (kbd "q") 'exit-magit)
-      (define-key magit-status-mode-map (kbd "C-c k") 'kill-magit-git-process))))
+       (defadvice magit-status (around magit-fullscreen activate)
+         (window-configuration-to-register :magit-fullscreen)
+         ad-do-it
+         (delete-other-windows))
+
+       (define-key magit-status-mode-map (kbd "q")
+         '(lambda ()
+            (interactive)
+            (kill-buffer)
+            (jump-to-register :magit-fullscreen)))
+
+       (define-key magit-status-mode-map (kbd "C-c k")
+         '(lambda ()
+            (interactive)
+            (kill-buffer "*magit-process*")))))
+  (global-set-key (kbd "C-c C-m c") 'magit-checkout))
 
 (defun cider-after ()
   (setq cider-popup-stacktraces t)
