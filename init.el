@@ -28,6 +28,10 @@
      '(defadvice ,mode (after rename-modeline activate)
         (setq mode-name ,new-name))))
 
+(defun git-toplevel ()
+  (replace-regexp-in-string "\n$" ""
+                            (shell-command-to-string "git rev-parse --show-toplevel")))
+
 (defun magit-after ()
   (add-hook 'magit-mode-hook
     '(lambda ()
@@ -148,9 +152,7 @@
   (setq ffip-patterns '("html" "org" "txt" "md" "el" "clj" "hamlc" "less" "coffee"
                         "py" "rb" "js" "pl" "sh" "erl" "hs" "ml"))
 
-  (setq ffip-project-root-function (lambda ()
-                                     (replace-regexp-in-string "\n$" ""
-                                                               (shell-command-to-string "git rev-parse --show-toplevel"))))
+  (setq ffip-project-root-function 'git-toplevel)
   (setq ffip-limit 100000))
 
 (setq el-get-sources
