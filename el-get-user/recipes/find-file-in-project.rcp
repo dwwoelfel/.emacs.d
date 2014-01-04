@@ -1,4 +1,5 @@
 (:name find-file-in-project
        :type github
        :pkgname "dwwoelfel/find-file-in-project"
-       :description "Quick access to project files in Emacs")
+       :description "Quick access to project files in Emacs"
+       :features find-file-in-project)
