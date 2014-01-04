@@ -63,6 +63,11 @@
   (global-set-key (kbd "C-c m f") 'magit-fetch)
   (global-set-key (kbd "C-c m u") 'magit-submodule-update)
   (global-set-key (kbd "C-c m m") 'magit-merge)
+  (global-set-key (kbd "C-c m g") '(lambda ()
+                                     (interactive)
+                                     (vc-git-grep (read-from-minibuffer "Search for: ")
+                                                  ""
+                                                  (git-toplevel)))))
 
 (defun cider-after ()
   (setq cider-popup-stacktraces t)
