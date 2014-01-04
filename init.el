@@ -89,7 +89,7 @@
   (add-to-list 'auto-mode-alist '("\\.cljs" . clojure-mode))
   (add-to-list 'auto-mode-alist '("\\.cljx" . clojure-mode))
   (add-to-list 'auto-mode-alist '("\\.dieter" . clojure-mode))
-  (define-key clojure-mode-map (kbd "TAB") 'cider-repl-indent-and-complete-symbol)
+  (define-key clojure-mode-map (kbd "<tab>") 'cider-repl-indent-and-complete-symbol)
   (add-hook 'clojure-mode-hook
             '(progn
                (flyspell-prog-mode)
