@@ -152,7 +152,7 @@
   (add-hook 'haskell-mode-hook 'turn-on-haskell-doc-mode)
   (add-hook 'haskell-mode-hook 'turn-on-haskell-indentation))
 
-(defun find-file-in-project-after ()
+(defun git-ls-file-in-project-after ()
   (global-set-key (kbd "C-x f") 'find-file-in-project)
   (setq ffip-patterns '("html" "org" "txt" "md" "el" "clj" "hamlc" "less" "coffee"
                         "py" "rb" "js" "pl" "sh" "erl" "hs" "ml"))
@@ -194,8 +194,8 @@
                :after (haskell-mode-after))
         (:name expand-region
                :after (global-set-key (kbd "C-=") 'er/expand-region))
-        (:name find-file-in-project
-               :after (find-file-in-project-after))
+        (:name git-ls-file-in-project
+               :after (git-ls-file-in-project-after))
         ,(vendor-source sudo)
         ,(vendor-source setup-rcirc)
         ,(vendor-source setup-org-mode)

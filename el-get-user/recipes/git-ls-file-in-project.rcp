@@ -1,5 +1,5 @@
-(:name find-file-in-project
+(:name git-ls-file-in-project
        :type github
        :pkgname "dwwoelfel/find-file-in-project"
        :description "Quick access to project files in Emacs"
-       :features find-file-in-project)
+       :features "find-file-in-project")
