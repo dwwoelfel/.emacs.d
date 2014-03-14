@@ -73,7 +73,7 @@ path."
   :type 'string
   :group 'haml-coffee)
 
-(defcustom haml-coffee-args-compile '("--disable-html-escaping" "--disable-clean-value" "--disable-html-attribute-escaping" "--preserve=")
+(defcustom haml-coffee-args-compile '("--disable-clean-value" "--preserve=")
   "The command line args to pass to `haml-coffee-command' when compiling a file."
   :type 'list
   :group 'haml-coffee)
