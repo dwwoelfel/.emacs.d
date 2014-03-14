@@ -95,7 +95,7 @@
   (add-to-list 'auto-mode-alist '("\\.dieter" . clojure-mode))
   (define-key clojure-mode-map (kbd "<tab>") 'cider-repl-indent-and-complete-symbol)
   (add-hook 'clojure-mode-hook
-            '(progn
+            '(lambda ()
                (flyspell-prog-mode)
                (font-lock-add-keywords
                 nil
@@ -112,9 +112,9 @@
 (defun swank-js-after ()
   (require 'slime)
   (require 'slime-js)
-  (global-set-key [f5] 'slime-js-reload)  
+  (global-set-key [f5] 'slime-js-reload)
   (add-hook 'js2-mode-hook
-            '(progn
+            '(lambda ()
                (slime-js-minor-mode 1))))
 
 (defun haml-mode-after ()
