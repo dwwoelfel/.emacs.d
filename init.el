@@ -83,7 +83,10 @@
   (setq cider-repl-history-file "~/.nrepl-history.eld")
   (add-hook 'cider-repl-mode-hook 'subword-mode)
   (add-hook 'cider-repl-mode-hook '(lambda ()
-                                     (define-key cider-repl-mode-map (kbd "M-R") 'cider-repl-previous-matching-input))))
+                                     (define-key cider-repl-mode-map (kbd "M-R") 'cider-repl-previous-matching-input)))
+  (defadvice nrepl-send-request (before nrepl-send-request-whoami activate)
+    (setq request (append request
+                          (list "whoami" (cider-user-first-name))))))
 
 (defun clojure-after ()
   (rename-modeline clojure-mode clojure-mode "Clj")
