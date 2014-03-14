@@ -65,6 +65,7 @@
   (global-set-key (kbd "C-c m m") 'magit-merge)
   (global-set-key (kbd "C-c m g") '(lambda ()
                                      (interactive)
+                                     (require 'grep)
                                      (vc-git-grep (grep-read-regexp)
                                                   ""
                                                   (git-toplevel)))))
