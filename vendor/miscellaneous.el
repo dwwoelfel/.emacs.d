@@ -173,7 +173,7 @@ user."
                   (interactive)
                   (join-line -1)))
 (global-set-key (kbd "C-c I") 'find-user-init-file)
-(global-set-key (kbd "C-c C-c C-e") 'fc-eval-and-replace)
+(global-set-key (kbd "C-c C-x C-e") 'fc-eval-and-replace)
 
 
 (defun replace-hash-rockets ()
@@ -187,6 +187,9 @@ user."
     (shell-command-on-region b e
      "python -mjson.tool" (current-buffer) t)))
 
+(setq split-height-threshold 1200)
+(setq split-width-threshold 2000)
 
+(blink-cursor-mode 0)
 
 (provide 'miscellaneous)
