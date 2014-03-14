@@ -164,15 +164,20 @@
   (setq ffip-project-root-function 'git-toplevel)
   (setq ffip-limit 100000))
 
+(defun clj-refactor-after ()
+  (add-hook 'clojure-mode-hook (lambda ()
+                                 (clj-refactor-mode 1)
+                                 (cljr-add-keybindings-with-prefix "C-c C-j"))))
+
 (setq el-get-sources
       `(,(vendor-source mac-bs)
         ,(vendor-source miscellaneous)
         (:name magit
                :after (magit-after))
-        (:name cider
-               :after (cider-after))
         (:name clojure-mode
                :after (clojure-after))
+        (:name cider
+               :after (cider-after))
         (:name paredit
                :after (paredit-after))
         (:name swank-js
@@ -200,6 +205,10 @@
                :after (global-set-key (kbd "C-=") 'er/expand-region))
         (:name git-ls-file-in-project
                :after (git-ls-file-in-project-after))
+        (:name sass-mode
+               :after (add-to-list 'auto-mode-alist '("\\.less" . sass-mode)))
+        ;; (:name clj-refactor
+        ;;        :after (clj-refactor-after))
         ,(vendor-source sudo)
         ,(vendor-source setup-rcirc)
         ,(vendor-source setup-org-mode)
@@ -207,7 +216,10 @@
 
 (setq my-packages
       (append
-       '(el-get haml-mode slime ethan-wspace sass-mode geiser nginx-mode)
-       (mapcar 'el-get-source-name el-get-sources)))
+       '(el-get haml-mode slime ethan-wspace geiser nginx-mode js2-mode)
+       (mapcar 'el-get-source-name el-get-sources)
+       '(cider-decompile)))
 
 (el-get 'sync my-packages)
+
+(require 'setup-slime-js)
