@@ -1,0 +1,4 @@
+(:name javap-mode
+       :description "show the ouput of javap when opening a jvm class file in emacs"
+       :type github
+       :pkgname "hiredman/javap-mode")

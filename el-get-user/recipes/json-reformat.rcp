@@ -1,0 +1,5 @@
+(:name git-ls-file-in-project
+       :type github
+       :pkgname "gongo/json-reformat"
+       :description "Reformat tool for JSON"
+       :features "json-reformat")

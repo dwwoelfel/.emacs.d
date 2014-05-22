@@ -1,0 +1,6 @@
+(:name clj-refactor
+       :description "A tiny collection of clojure refactoring functions for Emacs"
+       :type github
+       :pkgname "magnars/clj-refactor.el"
+       :depends (clojure-mode)
+       :provide clj-refactor)

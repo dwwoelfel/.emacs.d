@@ -217,10 +217,11 @@
 
 (setq my-packages
       (append
-       '(el-get haml-mode slime ethan-wspace geiser nginx-mode js2-mode)
+       '(el-get haml-mode slime ethan-wspace geiser nginx-mode js2-mode json-reformat)
        (mapcar 'el-get-source-name el-get-sources)
        '(cider-decompile)))
 
 (el-get 'sync my-packages)
 
 (require 'setup-slime-js)
+(put 'erase-buffer 'disabled nil)
