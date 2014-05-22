@@ -26,6 +26,9 @@
            (insert "~/")
          (call-interactively 'self-insert-command))))))
 
+(setq ido-default-buffer-method 'selected-window)
+(setq ido-default-file-method 'selected-window)
+
 
 (global-set-key (kbd "C-x C-b") 'ibuffer)
 (autoload 'ibuffer "ibuffer" "List buffers." t)
