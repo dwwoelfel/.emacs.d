@@ -66,6 +66,7 @@
   (global-set-key (kbd "C-c m g") '(lambda ()
                                      (interactive)
                                      (require 'grep)
+                                     (require 'vc-git)
                                      (vc-git-grep (grep-read-regexp)
                                                   ""
                                                   (git-toplevel)))))
