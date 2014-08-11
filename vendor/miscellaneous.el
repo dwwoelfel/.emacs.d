@@ -193,9 +193,9 @@ user."
 (setq split-height-threshold 1200)
 (setq split-width-threshold 2000)
 
-(blink-cursor-mode 0)
+(setq scroll-conservatively 10000) ;; scroll one line at a time
 
-(provide 'miscellaneous)
+(blink-cursor-mode 0)
 
 (eval-after-load 'rcirc
   '(defun-rcirc-command reconnect (arg)
