@@ -75,6 +75,8 @@
   (setq cider-popup-stacktraces t)
   (setq cider-repl-popup-stacktraces t)
   (setq cider-popup-on-error nil)
+  (setq cider-show-error-buffer nil)
+  (setq cider-auto-select-error-buffer nil)
 
   (setq nrepl-buffer-name-separator "-")
   (setq nrepl-buffer-name-show-port t)
@@ -160,7 +162,7 @@
 (defun git-ls-file-in-project-after ()
   (global-set-key (kbd "C-x f") 'find-file-in-project)
   (setq ffip-patterns '("html" "org" "txt" "md" "el" "clj" "hamlc" "less" "coffee"
-                        "py" "rb" "js" "pl" "sh" "erl" "hs" "ml"))
+                        "py" "rb" "js" "pl" "sh" "erl" "hs" "ml" "ref"))
 
   (setq ffip-project-root-function 'git-toplevel)
   (setq ffip-limit 100000))
