@@ -64,6 +64,8 @@
       '(("\\`/[^/]*:\\([^/]*/\\)*\\([^/]*\\)\\'" "/tmp/\\2" t)
         ("\\`/?\\([^/]*/\\)*\\([^/]*\\)\\'" "/home/daniel/.saves/\\2" t)))
 
+(setq create-lockfiles nil)
+
 (setq tramp-default-method "ssh")
 
 (defun whack-whitespace (arg)

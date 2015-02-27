@@ -9,6 +9,8 @@
             (local-set-key "\M-]" 'org-metaright)
             (local-set-key (kbd "C-S-<return>") 'org-insert-heading-after-current)
             (org-indent-mode)
-            (visual-line-mode)))
+            (visual-line-mode)
+            (require 'ethan-wspace)
+            (setq ethan-wspace-errors '())))
 
 (provide 'setup-org-mode)

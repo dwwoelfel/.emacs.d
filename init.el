@@ -63,6 +63,7 @@
   (global-set-key (kbd "C-c m f") 'magit-fetch)
   (global-set-key (kbd "C-c m u") 'magit-submodule-update)
   (global-set-key (kbd "C-c m m") 'magit-merge)
+  (global-set-key (kbd "C-c m B") 'magit-create-branch)
   (global-set-key (kbd "C-c m g") '(lambda ()
                                      (interactive)
                                      (require 'grep)
@@ -72,6 +73,7 @@
                                                   (git-toplevel)))))
 
 (defun cider-after ()
+  (setq cider-known-endpoints '(("pc-dev" "localhost" "6005")))
   (setq cider-popup-stacktraces t)
   (setq cider-repl-popup-stacktraces t)
   (setq cider-popup-on-error nil)
@@ -99,6 +101,18 @@
   (define-key clojure-mode-map (kbd "<tab>") 'cider-repl-indent-and-complete-symbol)
   (add-hook 'clojure-mode-hook
             '(lambda ()
+               (define-clojure-indent
+                 (this-as 1)
+                 (div 'defun)
+                 (g 'defun)
+                 (table 'defun)
+                 (th 'defun)
+                 (tr 'defun)
+                 (td 'defun)
+                 (thead 'defun)
+                 (tbody 'defun)
+                 (figure 'defun)
+                 (foreignObject 'defun))
                (flyspell-prog-mode)
                (font-lock-add-keywords
                 nil
@@ -110,7 +124,12 @@
   (add-hook 'clojure-mode-hook 'paredit-mode)
   (add-hook 'emacs-lisp-mode-hook 'paredit-mode)
   (add-hook 'scheme-mode-hook 'paredit-mode)
-  (add-hook 'cider-repl-mode-hook 'paredit-mode))
+  (add-hook 'cider-repl-mode-hook 'paredit-mode)
+  (require 'hippie-exp)
+  (defadvice he-substitute-string (after he-paredit-fix)
+    "remove extra paren when expanding line in paredit"
+    (if (and paredit-mode (equal (substring str -1) ")"))
+        (progn (backward-delete-char 1) (forward-char)))))
 
 (defun swank-js-after ()
   (require 'slime)
@@ -172,6 +191,19 @@
                                  (clj-refactor-mode 1)
                                  (cljr-add-keybindings-with-prefix "C-c C-j"))))
 
+(defun ethan-wspace-after ()
+  (setq mode-require-final-newline nil)
+  (global-ethan-wspace-mode 1))
+
+(defun ac-cider-after ()
+  (add-hook 'cider-mode-hook 'ac-flyspell-workaround)
+  (add-hook 'cider-mode-hook 'ac-cider-setup)
+  (add-hook 'cider-repl-mode-hook 'ac-cider-setup)
+  (eval-after-load "auto-complete"
+    '(progn
+       (add-to-list 'ac-modes 'cider-mode)
+       (add-to-list 'ac-modes 'cider-repl-mode))))
+
 (setq el-get-sources
       `(,(vendor-source mac-bs)
         ,(vendor-source miscellaneous)
@@ -192,7 +224,7 @@
         ,(vendor-source haml-coffee-mode)
         ,(vendor-source setup-slime-js)
         (:name ethan-wspace
-               :after (global-ethan-wspace-mode 1))
+               :after (ethan-wspace-after))
         (:name key-chord
                :after (keychord-after))
         (:name yaml-mode
@@ -210,20 +242,30 @@
                :after (git-ls-file-in-project-after))
         (:name sass-mode
                :after (add-to-list 'auto-mode-alist '("\\.less" . sass-mode)))
-        ;; (:name clj-refactor
-        ;;        :after (clj-refactor-after))
+        (:name clj-refactor
+               :after (clj-refactor-after))
+        (:name ac-cider
+               :after (ac-cider-after))
         ,(vendor-source sudo)
-        ,(vendor-source setup-rcirc)
+        ;; Not using this right now
+        ;; ,(vendor-source setup-rcirc)
         ,(vendor-source setup-org-mode)
         ,(vendor-source diminish)))
 
 (setq my-packages
       (append
-       '(el-get haml-mode slime ethan-wspace geiser nginx-mode js2-mode json-reformat)
+       '(el-get haml-mode less-css-mode slime ethan-wspace geiser nginx-mode js2-mode json-reformat
+                ;; needed by clj-refactor
+                s yasnippet multiple-cursors)
        (mapcar 'el-get-source-name el-get-sources)
        '(cider-decompile)))
 
 (el-get 'sync my-packages)
 
-(require 'setup-slime-js)
 (put 'erase-buffer 'disabled nil)
+
+;; These aren't executing for some reason :(
+(require 'clojure-mode)
+(clojure-after)
+(require 'clj-refactor)
+(clj-refactor-after)
