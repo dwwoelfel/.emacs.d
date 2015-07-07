@@ -112,7 +112,9 @@
                  (thead 'defun)
                  (tbody 'defun)
                  (figure 'defun)
-                 (foreignObject 'defun))
+                 (foreignObject 'defun)
+                 (tspan 'defun)
+                 (set-state-nr! 2))
                (flyspell-prog-mode)
                (font-lock-add-keywords
                 nil
@@ -204,6 +206,12 @@
        (add-to-list 'ac-modes 'cider-mode)
        (add-to-list 'ac-modes 'cider-repl-mode))))
 
+(defun multiple-cursors-after ()
+  (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
+  (global-set-key (kbd "C->") 'mc/mark-next-like-this)
+  (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+  (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this))
+
 (setq el-get-sources
       `(,(vendor-source mac-bs)
         ,(vendor-source miscellaneous)
@@ -211,7 +219,7 @@
                :after (magit-after))
         (:name clojure-mode
                :after (clojure-after))
-        (:name cider
+        (:name cider-stable
                :after (cider-after))
         (:name paredit
                :after (paredit-after))
@@ -246,6 +254,8 @@
                :after (clj-refactor-after))
         (:name ac-cider
                :after (ac-cider-after))
+        (:name multiple-cursors
+               :after (multiple-cursors-after))
         ,(vendor-source sudo)
         ;; Not using this right now
         ;; ,(vendor-source setup-rcirc)
@@ -254,9 +264,9 @@
 
 (setq my-packages
       (append
-       '(el-get haml-mode less-css-mode slime ethan-wspace geiser nginx-mode js2-mode json-reformat
+       '(el-get less-css-mode slime ethan-wspace geiser nginx-mode js2-mode json-reformat
                 ;; needed by clj-refactor
-                s yasnippet multiple-cursors)
+                s yasnippet)
        (mapcar 'el-get-source-name el-get-sources)
        '(cider-decompile)))
 

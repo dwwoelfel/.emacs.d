@@ -3,3 +3,5 @@ auto-save-list/
 tramp
 el-get/
 elpa/
+/ido.last
+/ac-comphist.dat

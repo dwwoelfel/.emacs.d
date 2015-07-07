@@ -169,8 +169,6 @@ user."
 (global-set-key (kbd "C-M-|") 'align-regexp)
 (global-set-key (kbd "C-c C-k") 'camelscore-word-at-point)
 (global-set-key (kbd "M-#") 'comment-or-uncomment-region)
-(global-set-key (kbd "C->") 'end-of-buffer)
-(global-set-key (kbd "C-<") 'beginning-of-buffer)
 (global-set-key (kbd "C-%") 'goto-match-paren)
 (global-set-key (kbd "C-c C-e") 'eval-buffer)
 (global-set-key (kbd "M-S-J")
@@ -198,30 +196,6 @@ user."
 (setq scroll-conservatively 10000) ;; scroll one line at a time
 
 (blink-cursor-mode 0)
-
-(eval-after-load 'rcirc
-  '(defun-rcirc-command reconnect (arg)
-     "Reconnect the server process."
-     (interactive "i")
-     (unless process
-       (error "There's no process for this target"))
-     (let* ((server (car (process-contact process)))
-      (port (process-contact process :service))
-      (nick (rcirc-nick process))
-      channels query-buffers)
-       (dolist (buf (buffer-list))
-   (with-current-buffer buf
-     (when (eq process (rcirc-buffer-process))
-       (remove-hook 'change-major-mode-hook
-        'rcirc-change-major-mode-hook)
-       (if (rcirc-channel-p rcirc-target)
-     (setq channels (cons rcirc-target channels))
-         (setq query-buffers (cons buf query-buffers))))))
-       (delete-process process)
-       (rcirc-connect server port nick
-          rcirc-default-user-name
-          rcirc-default-full-name
-          channels))))
 
 (defadvice yes-or-no-p (around prevent-dialog activate)
   "Prevent yes-or-no-p from activating a dialog"
