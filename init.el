@@ -88,6 +88,8 @@
   (setq nrepl-buffer-name-separator "-")
   (setq nrepl-buffer-name-show-port t)
 
+  (setq cider-prompt-save-file-on-load nil)
+
   (setq cider-repl-print-length 10000)
   (setq cider-repl-history-size 500000)
   (setq cider-repl-history-file "~/.nrepl-history.eld")
@@ -224,7 +226,7 @@
                :after (magit-after))
         (:name clojure-mode
                :after (clojure-after))
-        (:name cider-stable
+        (:name cider
                :after (cider-after))
         (:name paredit
                :after (paredit-after))
