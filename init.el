@@ -77,6 +77,10 @@
                                                   ""
                                                   (git-toplevel)))))
 
+(defun enable-clojure-mode-stuff ()
+  (clj-refactor-mode 1)
+  (add-hook 'before-save-hook 'cljr-clean-ns t t))
+
 (defun cider-after ()
   (setq cider-known-endpoints '(("pc-dev" "localhost" "6005")))
   (setq cider-popup-stacktraces t)
@@ -93,6 +97,8 @@
   (setq cider-repl-print-length 10000)
   (setq cider-repl-history-size 500000)
   (setq cider-repl-history-file "~/.nrepl-history.eld")
+  (setq cider-repl-display-in-current-window nil)
+  (setq cider-repl-display-help-banner nil)
   (add-hook 'cider-repl-mode-hook 'subword-mode)
   (add-hook 'cider-repl-mode-hook '(lambda ()
                                      (define-key cider-repl-mode-map (kbd "M-R") 'cider-repl-previous-matching-input)))
@@ -219,6 +225,30 @@
   (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
   (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this))
 
+(defun align-cljlet-after ()
+  (add-hook 'clojure-mode-hook
+            '(lambda ()
+               (define-key clojure-mode-map (kbd "C-c C-v") 'align-cljlet))))
+
+(defun tuareg-after ()
+  (add-hook 'tuareg-mode-hook 'tuareg-imenu-set-imenu)
+  (setq auto-mode-alist
+        (append '(("\\.ml[ily]?$" . tuareg-mode)
+                  ("\\.topml$" . tuareg-mode))
+                auto-mode-alist))
+  (add-hook 'tuareg-mode-hook 'utop-setup-ocaml-buffer)
+  (add-hook 'tuareg-mode-hook 'merlin-mode)
+  (setq tuareg-indent-align-with-first-arg nil)
+  )
+
+(defun utop-after ()
+  (autoload 'utop-setup-ocaml-buffer "utop" "Toplevel for OCaml" t))
+
+(defun merlin-after ()
+  (setq merlin-use-auto-complete-mode 'easy)
+  (setq merlin-error-after-save t)
+  (setq merlin-command 'opam))
+
 (setq el-get-sources
       `(,(vendor-source mac-bs)
         ,(vendor-source miscellaneous)
@@ -230,8 +260,8 @@
                :after (cider-after))
         (:name paredit
                :after (paredit-after))
-        (:name swank-js
-               :after (swank-js-after))
+        ;; (:name swank-js
+        ;;        :after (swank-js-after))
         (:name haml-mode
                :after (haml-mode-after))
         (:name coffee-mode
@@ -263,6 +293,14 @@
                :after (ac-cider-after))
         (:name multiple-cursors
                :after (multiple-cursors-after))
+        (:name align-cljlet
+               :after (align-cljlet-after))
+        (:name utop
+               :after (utop-after))
+        (:name merlin
+               :after (merlin-after))
+        (:name tuareg
+               :after (tuareg-after))
         ,(vendor-source sudo)
         ;; Not using this right now
         ;; ,(vendor-source setup-rcirc)
@@ -271,9 +309,7 @@
 
 (setq my-packages
       (append
-       '(el-get less-css-mode slime ethan-wspace geiser nginx-mode js2-mode json-reformat
-                ;; needed by clj-refactor
-                s yasnippet)
+       '(el-get less-css-mode slime ethan-wspace geiser nginx-mode js2-mode json-reformat gnuplot-mode)
        (mapcar 'el-get-source-name el-get-sources)
        '(cider-decompile)))
 

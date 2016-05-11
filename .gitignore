@@ -5,3 +5,6 @@ el-get/
 elpa/
 /ido.last
 /ac-comphist.dat
+/ido.last~
+/eshell/
+/bookmarks

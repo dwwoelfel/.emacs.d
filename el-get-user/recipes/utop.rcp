@@ -1,0 +1,4 @@
+(:name utop
+       :description "Emacs integration with the utop Ocaml shell"
+       :type http
+       :url "https://raw.github.com/diml/utop/master/src/top/utop.el")

@@ -1,6 +1,8 @@
 (:name clj-refactor
-       :description "A tiny collection of clojure refactoring functions for Emacs"
+       :description "A collection of simple clojure refactoring functions"
        :type github
-       :pkgname "magnars/clj-refactor.el"
-       :depends (clojure-mode)
+       :depends (dash s clojure-mode yasnippet paredit multiple-cursors cider
+                      edn inflections hydra)
+       :pkgname "clojure-emacs/clj-refactor.el"
+       :checkout "2.2.0"
        :provide clj-refactor)

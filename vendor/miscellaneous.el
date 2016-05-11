@@ -2,8 +2,14 @@
 (setq uniquify-buffer-name-style 'post-forward)
 
 ;; Still a good idea?
-(setq ispell-program-name "/usr/local/bin/hunspell")
+;; brew install aspell --with-all-langs
+(setq ispell-program-name "/usr/local/bin/aspell")
 (setq flyspell-issue-message-flag nil)
+(dolist (hook '(text-mode-hook))
+  (add-hook hook (lambda () (flyspell-mode 1))))
+(dolist (hook '(change-log-mode-hook log-edit-mode-hook))
+  (add-hook hook (lambda () (flyspell-mode -1))))
+
 
 (setq-default display-buffer-reuse-frames nil)
 
@@ -207,3 +213,14 @@ user."
     ad-do-it))
 
 (provide 'miscellaneous)
+
+;; Compile to pdf by default: http://www.emacswiki.org/emacs/AUCTeX
+(setq TeX-PDF-mode t)
+(setq TeX-auto-save t)
+(setq TeX-parse-self t)
+(setq-default TeX-master nil)
+(add-hook 'LaTeX-mode-hook 'visual-line-mode)
+(add-hook 'LaTeX-mode-hook 'flyspell-mode)
+(add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
+(add-hook 'LaTeX-mode-hook 'turn-on-reftex)
+(setq reftex-plug-into-AUCTeX t)

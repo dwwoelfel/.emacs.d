@@ -1,0 +1,4 @@
+(:name merlin
+       :type github
+       :description "Merlin"
+       :pkgname "the-lambda-church/merlin")
