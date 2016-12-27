@@ -1,0 +1,4 @@
+(:name hack-mode
+       :description "hack-mode from FB"
+       :type :http
+       :url "https://raw.githubusercontent.com/facebook/hhvm/master/hphp/hack/editor-plugins/emacs/hack-mode.el")

@@ -1,3 +1,10 @@
+
+;; Added by Package.el.  This must come before configurations of
+;; installed packages.  Don't delete this line.  If you don't want it,
+;; just comment it out by adding a semicolon to the start of the line.
+;; You may delete these explanatory comments.
+(package-initialize)
+
 (add-to-list 'load-path "~/.emacs.d/el-get/el-get")
 
 (unless (require 'el-get nil 'noerror)
@@ -111,6 +118,7 @@
   (add-to-list 'auto-mode-alist '("\\.cljs" . clojure-mode))
   (add-to-list 'auto-mode-alist '("\\.cljx" . clojure-mode))
   (add-to-list 'auto-mode-alist '("\\.dieter" . clojure-mode))
+  (require 'clojure-mode)
   (define-key clojure-mode-map (kbd "<tab>") 'cider-repl-indent-and-complete-symbol)
   (add-hook 'clojure-mode-hook
             '(lambda ()
@@ -127,7 +135,11 @@
                  (figure 'defun)
                  (foreignObject 'defun)
                  (tspan 'defun)
-                 (set-state-nr! 2))
+                 (set-state-nr! 2)
+                 (as-> 'inc)
+                 (cond-> 'inc)
+                 (some-> 'inc)
+                 (go-try 'defun))
                (flyspell-prog-mode)
                (font-lock-add-keywords
                 nil
@@ -160,14 +172,16 @@
             (lambda ()
               (local-set-key (kbd "C-c C-d") 'slime-js-haml-coffee-eval-current)
               (local-set-key (kbd "C-c C-k") 'slime-js-haml-coffee-eval-buffer)
-              (slime-js-minor-mode 1))))
+              ;;(slime-js-minor-mode 1)
+              )))
 
 (defun coffee-mode-after ()
   (add-hook 'coffee-mode-hook
             (lambda ()
               (local-set-key (kbd "C-c C-d") 'slime-js-coffee-eval-current)
               (local-set-key (kbd "C-c C-k") 'slime-js-coffee-eval-buffer)
-              (slime-js-minor-mode 1))))
+              ;;(slime-js-minor-mode 1)
+              )))
 
 (defun keychord-after ()
   (key-chord-mode 1)
@@ -195,8 +209,8 @@
 
 (defun git-ls-file-in-project-after ()
   (global-set-key (kbd "C-x f") 'find-file-in-project)
-  (setq ffip-patterns '("html" "org" "txt" "md" "el" "clj" "hamlc" "less" "coffee"
-                        "py" "rb" "js" "pl" "sh" "erl" "hs" "ml" "ref"))
+  (setq ffip-patterns '("html" "org" "txt" "md" "el" "clj" "hamlc" "less" "coffee" "edn"
+                        "py" "rb" "js" "pl" "sh" "erl" "hs" "ml" "ref" "css" "php"))
 
   (setq ffip-project-root-function 'git-toplevel)
   (setq ffip-limit 100000))
@@ -210,14 +224,14 @@
   (setq mode-require-final-newline nil)
   (global-ethan-wspace-mode 1))
 
-(defun ac-cider-after ()
-  (add-hook 'cider-mode-hook 'ac-flyspell-workaround)
-  (add-hook 'cider-mode-hook 'ac-cider-setup)
-  (add-hook 'cider-repl-mode-hook 'ac-cider-setup)
-  (eval-after-load "auto-complete"
-    '(progn
-       (add-to-list 'ac-modes 'cider-mode)
-       (add-to-list 'ac-modes 'cider-repl-mode))))
+;; (defun ac-cider-after ()
+;;   (add-hook 'cider-mode-hook 'ac-flyspell-workaround)
+;;   (add-hook 'cider-mode-hook 'ac-cider-setup)
+;;   (add-hook 'cider-repl-mode-hook 'ac-cider-setup)
+;;   (eval-after-load "auto-complete"
+;;     '(progn
+;;        (add-to-list 'ac-modes 'cider-mode)
+;;        (add-to-list 'ac-modes 'cider-repl-mode))))
 
 (defun multiple-cursors-after ()
   (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
@@ -249,6 +263,18 @@
   (setq merlin-error-after-save t)
   (setq merlin-command 'opam))
 
+(defun dumb-jump-after ()
+  (add-to-list 'auto-mode-alist '("\\.js" . dumb-jump-mode)))
+
+(defun js2-mode-after ()
+  (setq js2-basic-offset 2)
+  (setq js2-strict-trailing-comma-warning nil)
+  (add-to-list 'auto-mode-alist '("\\.js" . js2-mode))
+  (add-to-list 'auto-mode-alist '("\\.react.js" . js2-jsx-mode)))
+
+(defun flyspell-mode-after ()
+  (global-set-key (kbd "C-.") 'flyspell-correct-word-before-point))
+
 (setq el-get-sources
       `(,(vendor-source mac-bs)
         ,(vendor-source miscellaneous)
@@ -267,7 +293,7 @@
         (:name coffee-mode
                :after (coffee-mode-after))
         ,(vendor-source haml-coffee-mode)
-        ,(vendor-source setup-slime-js)
+        ;;,(vendor-source setup-slime-js)
         (:name ethan-wspace
                :after (ethan-wspace-after))
         (:name key-chord
@@ -289,8 +315,8 @@
                :after (add-to-list 'auto-mode-alist '("\\.less" . sass-mode)))
         (:name clj-refactor
                :after (clj-refactor-after))
-        (:name ac-cider
-               :after (ac-cider-after))
+        ;; (:name ac-cider
+        ;;        :after (ac-cider-after))
         (:name multiple-cursors
                :after (multiple-cursors-after))
         (:name align-cljlet
@@ -299,8 +325,16 @@
                :after (utop-after))
         (:name merlin
                :after (merlin-after))
-        (:name tuareg
-               :after (tuareg-after))
+        (:name dumb-jump
+               :after (dumb-jump-after))
+        (:name js2-mode
+               :after (js2-mode-after))
+        (:name hack-mode
+               :after (add-to-list 'auto-mode-alist '("\\.php" . hack-mode)))
+        ;; (:name flyspell-mode
+        ;;        :after (flyspell-mode-after))
+        ;;(:name tuareg
+        ;;       :after (tuareg-after))
         ,(vendor-source sudo)
         ;; Not using this right now
         ;; ,(vendor-source setup-rcirc)
@@ -309,7 +343,7 @@
 
 (setq my-packages
       (append
-       '(el-get less-css-mode slime ethan-wspace geiser nginx-mode js2-mode json-reformat gnuplot-mode)
+       '(el-get less-css-mode slime ethan-wspace geiser nginx-mode json-reformat gnuplot-mode company-mode web-mode)
        (mapcar 'el-get-source-name el-get-sources)
        '(cider-decompile)))
 
@@ -322,3 +356,5 @@
 (clojure-after)
 (require 'clj-refactor)
 (clj-refactor-after)
+
+(setq web-mode-code-indent-offset 2)
