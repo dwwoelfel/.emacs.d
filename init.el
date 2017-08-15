@@ -17,6 +17,9 @@
 
 (add-to-list 'el-get-recipe-path "~/.emacs.d/el-get-user/recipes")
 
+(defun fb? ()
+  (equal "dww" (user-login-name)))
+
 (defun vendor-url (filename)
   "Constructs a file url for filename in vendor dir"
   (concat "file://"
@@ -24,11 +27,12 @@
           "vendor/"
           filename))
 
-(defmacro vendor-source (name)
+(defmacro vendor-source (name after)
   `(list :name ',name
          :type 'http
          :url ',(vendor-url (format "%s.el" name))
-         :features ',name))
+         :features ',name
+         :after ',after))
 
 (defmacro rename-modeline (package-name mode new-name)
   `(eval-after-load ',package-name
@@ -215,6 +219,17 @@
   (setq ffip-project-root-function 'git-toplevel)
   (setq ffip-limit 100000))
 
+(defun find-file-in-project-after ()
+  (global-set-key (kbd "C-x f") 'find-file-in-project)
+  (if (fb?)
+      (setq ffip-project-file '(".dumbjump"))
+    (setq ffip-project-file '(".svn" ".hg" ".git" ".dumbjump"))
+    (setq ffip-project-root-function 'git-toplevel))
+  (setq ffip-patterns '("*.html" "*.org" "*.txt" "*.md" "*.el" "*.clj" "*.hamlc" "*.less" "*.coffee" "*.edn"
+                        "*.py" "*.rb" "*.js" "*.pl" "*.sh" "*.erl" "*.hs" "*.ml" "*.ref" "*.css" "*.php" "*.re"))
+
+  (setq ffip-limit 100000))
+
 (defun clj-refactor-after ()
   (add-hook 'clojure-mode-hook (lambda ()
                                  (clj-refactor-mode 1)
@@ -264,20 +279,45 @@
   (setq merlin-command 'opam))
 
 (defun dumb-jump-after ()
-  (add-to-list 'auto-mode-alist '("\\.js" . dumb-jump-mode)))
+  (add-to-list 'auto-mode-alist '("\\.js" . dumb-jump-mode))
+  (add-hook 'web-mode-hook 'dumb-jump-mode)
+  (add-hook 'web-mode-hook '(lambda ()
+                              (define-key web-mode-map (kbd "M-.") 'dumb-jump-go)
+                              (define-key web-mode-map (kbd "M-,") 'dumb-jump-back)
+                              (define-key web-mode-map (kbd "M-S.") 'dumb-jump-go-other-window))))
+
 
 (defun js2-mode-after ()
   (setq js2-basic-offset 2)
   (setq js2-strict-trailing-comma-warning nil)
-  (add-to-list 'auto-mode-alist '("\\.js" . js2-mode))
-  (add-to-list 'auto-mode-alist '("\\.react.js" . js2-jsx-mode)))
+  ;;(add-to-list 'auto-mode-alist '("\\.js" . js2-mode))
+  ;;(add-to-list 'auto-mode-alist '("\\.react.js" . js2-jsx-mode))
+  )
+
+(defun web-mode-after ()
+  ;; (setq js2-basic-offset 2)
+  ;; (setq js2-strict-trailing-comma-warning nil)
+  (add-to-list 'auto-mode-alist '("\\.js" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.react.js" . web-mode)))
 
 (defun flyspell-mode-after ()
   (global-set-key (kbd "C-.") 'flyspell-correct-word-before-point))
 
+(defun prettier-after ()
+  (add-hook 'js2-mode-hook '(lambda ()
+                              (define-key js2-mode-map (kbd "M-q") 'prettier-js)))
+  (add-hook 'web-mode-hook '(lambda ()
+                              (define-key web-mode-map (kbd "M-q") 'prettier-js)))
+  (setq prettier-js-args '(
+                           "--trailing-comma" "all"
+                           "--bracket-spacing" "false"
+                           "--single-quote" "true"
+                           "--jsx-bracket-same-line" "true"
+                           )))
+
 (setq el-get-sources
-      `(,(vendor-source mac-bs)
-        ,(vendor-source miscellaneous)
+      `(,(vendor-source mac-bs nil)
+        ,(vendor-source miscellaneous nil)
         (:name magit
                :after (magit-after))
         (:name clojure-mode
@@ -292,7 +332,7 @@
                :after (haml-mode-after))
         (:name coffee-mode
                :after (coffee-mode-after))
-        ,(vendor-source haml-coffee-mode)
+        ,(vendor-source haml-coffee-mode nil)
         ;;,(vendor-source setup-slime-js)
         (:name ethan-wspace
                :after (ethan-wspace-after))
@@ -309,8 +349,11 @@
                :after (haskell-mode-after))
         (:name expand-region
                :after (global-set-key (kbd "C-=") 'er/expand-region))
-        (:name git-ls-file-in-project
-               :after (git-ls-file-in-project-after))
+        ,(if (fb?)
+            '(:name find-file-in-project
+                   :after (find-file-in-project-after))
+         '(:name git-ls-file-in-project
+                 :after (git-ls-file-in-project-after)))
         (:name sass-mode
                :after (add-to-list 'auto-mode-alist '("\\.less" . sass-mode)))
         (:name clj-refactor
@@ -329,21 +372,27 @@
                :after (dumb-jump-after))
         (:name js2-mode
                :after (js2-mode-after))
+        (:name web-mode
+               :after (web-mode-after))
         (:name hack-mode
                :after (add-to-list 'auto-mode-alist '("\\.php" . hack-mode)))
         ;; (:name flyspell-mode
         ;;        :after (flyspell-mode-after))
         ;;(:name tuareg
         ;;       :after (tuareg-after))
-        ,(vendor-source sudo)
+        ,(vendor-source sudo nil)
         ;; Not using this right now
         ;; ,(vendor-source setup-rcirc)
-        ,(vendor-source setup-org-mode)
-        ,(vendor-source diminish)))
+        ,(vendor-source setup-org-mode nil)
+        ,(vendor-source diminish nil)
+        ,(vendor-source flycheck-flow nil)
+        ,(vendor-source prettier-js (prettier-after))))
 
 (setq my-packages
       (append
-       '(el-get less-css-mode slime ethan-wspace geiser nginx-mode json-reformat gnuplot-mode company-mode web-mode)
+       '(el-get less-css-mode slime ethan-wspace geiser nginx-mode ;json-reformat
+                gnuplot-mode company-mode org-reveal flycheck
+                )
        (mapcar 'el-get-source-name el-get-sources)
        '(cider-decompile)))
 
@@ -358,3 +407,22 @@
 (clj-refactor-after)
 
 (setq web-mode-code-indent-offset 2)
+(setq org-reveal-root "file:///~/.emacs.d/support/reveal-js")
+
+(defun js-log (beg end)
+  "add console.log statement"
+  (interactive (if (use-region-p)
+                   (list (region-beginning) (region-end))
+                 (list nil nil)))
+  (let ((log-thing (if (and beg end)
+                    (buffer-substring-no-properties beg end)
+                    "")))
+    (message "%s" log-thing)
+    (save-excursion
+      (end-of-line)
+      (insert "\n" "console.log('" log-thing "', " log-thing ");")
+      (indent-for-tab-command))))
+
+(global-set-key (kbd "C-l") 'js-log)
+
+(windmove-default-keybindings)
