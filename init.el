@@ -5,6 +5,9 @@
 ;; You may delete these explanatory comments.
 (package-initialize)
 
+(setq package-archives '(("melpa" . "https://melpa.org/packages/")
+                         ("gnu" . "http://elpa.gnu.org/packages/")))
+
 (add-to-list 'load-path "~/.emacs.d/el-get/el-get")
 
 (unless (require 'el-get nil 'noerror)
@@ -278,6 +281,7 @@
 (setq el-get-sources
       `(,(vendor-source mac-bs)
         ,(vendor-source miscellaneous)
+        ,(vendor-source erc-config)
         (:name magit
                :after (magit-after))
         (:name clojure-mode
@@ -343,7 +347,9 @@
 
 (setq my-packages
       (append
-       '(el-get less-css-mode slime ethan-wspace geiser nginx-mode json-reformat gnuplot-mode company-mode web-mode)
+       '(el-get less-css-mode ;slime
+                ethan-wspace geiser nginx-mode json-reformat gnuplot-mode company-mode web-mode
+                )
        (mapcar 'el-get-source-name el-get-sources)
        '(cider-decompile)))
 
